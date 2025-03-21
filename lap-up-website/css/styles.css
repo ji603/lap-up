@@ -185,8 +185,43 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
+/* Logo Styles */
+.logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
 .logo img {
     height: 40px;
+    margin-right: 12px;
+}
+
+.logo-text {
+    font-family: var(--heading-font);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-color);
+    letter-spacing: 0.5px;
+    transition: var(--transition-normal);
+    background: linear-gradient(120deg, var(--primary-color), #4A69FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header.scrolled .logo-text {
+    color: var(--text-color);
+}
+
+body.dark-mode .logo-text {
+    color: var(--light-text);
+}
+
+@media (max-width: 768px) {
+    .logo-text {
+        font-size: 1.1rem;
+    }
 }
 
 /* Navigation */
