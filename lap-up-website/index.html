@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lap Up Entertainment - Event Management Company Mumbai</title>
     <meta name="description" content="Lap Up Entertainment is a Mumbai-based event management company offering services in event planning, film production, digital promotion, and artist management.">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Preload key assets -->
-    <link rel="preload" href="assets/videos/hero-bg.mp4" as="video" type="video/mp4">
+    <link rel="preload" href="/assets/videos/hero.mp4" as="video" type="video/mp4">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
 </head>
@@ -39,7 +39,7 @@
 
             <nav class="main-nav">
                 <ul class="nav-links">
-                    <!-- <li><a href="#home" class="nav-link active">Home</a></li> -->
+                    <li><a href="#home" class="nav-link active">Home</a></li>
                     <li><a href="#about" class="nav-link">About</a></li>
                     <li><a href="#services" class="nav-link">Services</a></li>
                     <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
@@ -56,32 +56,36 @@
                 <span></span>
                 <span></span>
                 <span></span>
+                <span></span>
             </div>
         </div>
     </header>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu">
+        <div class="mobile-menu-close">
+            <i class="fas fa-times"></i>
+        </div>
         <ul class="mobile-nav-links">
-            <li><a href="#home" class="mobile-nav-link">Home</a></li>
-            <li><a href="#about" class="mobile-nav-link">About</a></li>
-            <li><a href="#services" class="mobile-nav-link">Services</a></li>
-            <li><a href="#portfolio" class="mobile-nav-link">Portfolio</a></li>
-            <li><a href="#clients" class="mobile-nav-link">Clients</a></li>
-            <li><a href="#contact" class="mobile-nav-link">Contact</a></li>
+            <li><a href="#home" class="mobile-nav-link" style="--index: 0">Home</a></li>
+            <li><a href="#about" class="mobile-nav-link" style="--index: 1">About</a></li>
+            <li><a href="#services" class="mobile-nav-link" style="--index: 2">Services</a></li>
+            <li><a href="#portfolio" class="mobile-nav-link" style="--index: 3">Portfolio</a></li>
+            <li><a href="#clients" class="mobile-nav-link" style="--index: 4">Clients</a></li>
+            <li><a href="#contact" class="mobile-nav-link" style="--index: 5">Contact</a></li>
         </ul>
-        <div class="social-links">
-            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+        <div class="mobile-menu-social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
         </div>
     </div>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <video class="hero-video" autoplay muted loop playsinline poster="assets/images/hero-poster.jpg">
-            <source src="assets/videos/hero-bg.mp4" type="video/mp4">
+        <video class="hero-video" autoplay muted loop playsinline poster="/lap-up-website/assets/videos/hero.mp4">
+            <source src="/lap-up-website/assets/videos/hero.mp4" type="video/mp4">
             <!-- Fallback -->
             Your browser does not support the video tag.
         </video>
@@ -647,7 +651,7 @@
 
     <!-- Back to Top Button -->
     <a href="#" class="back-to-top">
-        <i class="fas fa-arrow-up"></i>
+        <i class="fas fa-chevron-up"></i>
     </a>
 
     <!-- Portfolio Modal -->

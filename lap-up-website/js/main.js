@@ -14,11 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initCounters();
     initSmoothScrolling();
     initLogoScrollToHero();
+    initResponsiveChecks();
 });
 
 // Preloader
 function initPreloader() {
     const preloader = document.querySelector('.preloader');
+    if (!preloader) return;
+    
     window.addEventListener('load', () => {
         preloader.style.opacity = '0';
         setTimeout(() => {
@@ -32,6 +35,15 @@ function initCustomCursor() {
     const cursor = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
     
+    if (!cursor || !cursorOutline) return;
+    
+    // Check if it's a touch device
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        cursor.style.display = 'none';
+        cursorOutline.style.display = 'none';
+        return;
+    }
+    
     document.addEventListener('mousemove', (e) => {
         const posX = e.clientX;
         const posY = e.clientY;
@@ -41,14 +53,16 @@ function initCustomCursor() {
     });
     
     // Add hover effect on interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .service-card, .portfolio-item');
+    const interactiveElements = document.querySelectorAll('a, button, .service-card, .portfolio-item, .filter-btn, .theme-toggle, .hamburger');
     interactiveElements.forEach(el => {
         el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'scale(1.5)';
             cursorOutline.style.transform = 'scale(1.5)';
             cursorOutline.style.opacity = '0.5';
         });
         
         el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'scale(1)';
             cursorOutline.style.transform = 'scale(1)';
             cursorOutline.style.opacity = '1';
         });
@@ -59,13 +73,24 @@ function initCustomCursor() {
 function initMobileMenu() {
     const hamburger = document.querySelector('.hamburger');
     const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileMenuClose = document.querySelector('.mobile-menu-close');
     const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+    
+    if (!hamburger || !mobileMenu) return;
     
     hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');
         mobileMenu.classList.toggle('active');
         document.body.classList.toggle('no-scroll');
     });
+    
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        });
+    }
     
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -82,6 +107,8 @@ function initScrollAnimations() {
     const header = document.querySelector('.header');
     let lastScroll = 0;
     
+    if (!header) return;
+    
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
         
@@ -91,8 +118,13 @@ function initScrollAnimations() {
             header.classList.remove('scrolled');
         }
         
-        if (currentScroll > lastScroll) {
-            header.style.transform = 'translateY(-100%)';
+        // Only hide header on scroll down if we're not on mobile
+        if (window.innerWidth > 767) {
+            if (currentScroll > lastScroll && currentScroll > 200) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
         } else {
             header.style.transform = 'translateY(0)';
         }
@@ -122,6 +154,8 @@ function initScrollAnimations() {
 function initPortfolioFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
+    
+    if (filterBtns.length === 0 || portfolioItems.length === 0) return;
     
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -154,6 +188,8 @@ function initPortfolioFilters() {
 function initBackToTop() {
     const backToTop = document.querySelector('.back-to-top');
     
+    if (!backToTop) return;
+    
     window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
             backToTop.classList.add('active');
@@ -174,6 +210,9 @@ function initBackToTop() {
 // Dark Mode Toggle
 function initDarkMode() {
     const themeToggle = document.querySelector('.theme-toggle');
+    
+    if (!themeToggle) return;
+    
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
     
     // Check for saved theme preference or system preference
@@ -182,7 +221,10 @@ function initDarkMode() {
     
     if (currentTheme === 'dark') {
         document.body.classList.add('dark-mode');
-        themeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
     }
     
     themeToggle.addEventListener('click', () => {
@@ -190,8 +232,10 @@ function initDarkMode() {
         
         // Update icon
         const icon = themeToggle.querySelector('i');
-        icon.classList.toggle('fa-moon');
-        icon.classList.toggle('fa-sun');
+        if (icon) {
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
         
         // Save preference
         const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
@@ -203,11 +247,31 @@ function initDarkMode() {
 function initContactForm() {
     const form = document.getElementById('contact-form');
     
+    if (!form) return;
+    
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
+        
+        // Basic form validation
+        let hasError = false;
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                hasError = true;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+        
+        if (hasError) {
+            showFormMessage('Please fill in all required fields.', 'error');
+            return;
+        }
         
         try {
             // Here you would typically send the data to your server
@@ -228,20 +292,38 @@ function showFormMessage(message, type) {
     messageDiv.textContent = message;
     
     const form = document.getElementById('contact-form');
+    if (!form) return;
+    
+    // Remove any existing message
+    const existingMessage = form.querySelector('.form-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
     form.appendChild(messageDiv);
     
     setTimeout(() => {
-        messageDiv.remove();
+        messageDiv.classList.add('form-message-hide');
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 300);
     }, 3000);
 }
 
 // Testimonial Slider
 function initTestimonialSlider() {
     const slider = document.querySelector('.testimony-slider');
-    const slides = document.querySelectorAll('.testimony-slide');
-    const prevBtn = document.querySelector('.testimony-prev');
-    const nextBtn = document.querySelector('.testimony-next');
+    
+    if (!slider) return;
+    
+    const slides = slider.querySelectorAll('.testimony-slide');
+    const prevBtn = slider.querySelector('.testimony-prev');
+    const nextBtn = slider.querySelector('.testimony-next');
+    
+    if (slides.length === 0 || !prevBtn || !nextBtn) return;
+    
     let currentSlide = 0;
+    let autoSlideInterval;
     
     function showSlide(index) {
         slides.forEach((slide, i) => {
@@ -249,30 +331,76 @@ function initTestimonialSlider() {
         });
     }
     
-    prevBtn.addEventListener('click', () => {
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+    
+    function prevSlide() {
         currentSlide = (currentSlide - 1 + slides.length) % slides.length;
         showSlide(currentSlide);
+    }
+    
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, 5000);
+    }
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    prevBtn.addEventListener('click', () => {
+        prevSlide();
+        stopAutoSlide();
+        startAutoSlide();
     });
     
     nextBtn.addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
+        nextSlide();
+        stopAutoSlide();
+        startAutoSlide();
     });
     
-    // Initialize first slide
-    showSlide(0);
+    // Touch swipe functionality for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
     
-    // Auto slide
-    setInterval(() => {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-    }, 5000);
+    slider.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoSlide();
+    }, { passive: true });
+    
+    slider.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        startAutoSlide();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX - touchStartX > swipeThreshold) {
+            // Swiped right
+            prevSlide();
+        } else if (touchStartX - touchEndX > swipeThreshold) {
+            // Swiped left
+            nextSlide();
+        }
+    }
+    
+    // Initialize first slide and start auto-slide
+    showSlide(0);
+    startAutoSlide();
 }
 
 // Client Logo Slider
 function initClientSlider() {
     const track = document.querySelector('.clients-track');
+    
+    if (!track) return;
+    
     const logos = track.querySelectorAll('.client-logo');
+    
+    if (logos.length === 0) return;
     
     // Clone logos for infinite scroll
     logos.forEach(logo => {
@@ -280,13 +408,28 @@ function initClientSlider() {
         track.appendChild(clone);
     });
     
-    // Animate the track
-    track.style.animation = `scroll ${logos.length * 5}s linear infinite`;
+    // Calculate animation duration based on number of logos
+    const duration = logos.length * 5;
+    
+    // Adjust animation for smaller screens
+    function updateAnimation() {
+        if (window.innerWidth <= 768) {
+            track.style.animation = `scroll ${duration * 0.7}s linear infinite`;
+        } else {
+            track.style.animation = `scroll ${duration}s linear infinite`;
+        }
+    }
+    
+    updateAnimation();
+    window.addEventListener('resize', updateAnimation);
 }
 
 // Number Counter Animation
 function initCounters() {
     const counters = document.querySelectorAll('.counter');
+    
+    if (counters.length === 0) return;
+    
     const speed = 200;
     
     const updateCount = (counter) => {
@@ -311,46 +454,96 @@ function initCounters() {
         });
     };
     
-    const observer = new IntersectionObserver(startCounting, {
-        threshold: 0.5
-    });
-    
-    counters.forEach(counter => {
-        counter.innerText = '0';
-        observer.observe(counter);
-    });
+    // Use Intersection Observer API for better performance
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(startCounting, {
+            threshold: 0.5
+        });
+        
+        counters.forEach(counter => {
+            counter.innerText = '0';
+            observer.observe(counter);
+        });
+    } else {
+        // Fallback for older browsers
+        counters.forEach(counter => {
+            counter.innerText = counter.getAttribute('data-target');
+        });
+    }
 }
 
 // Smooth Scrolling for Anchor Links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+function initSmoothScrolling() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            if (this.getAttribute('href') === '#') return;
+            
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            
+            if (target) {
+                // Account for fixed header
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
-});
+}
 
 // Initialize smooth scrolling for logo click to hero section
 function initLogoScrollToHero() {
     const logoLink = document.querySelector('.logo a');
     
-    if (logoLink) {
-        logoLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const heroSection = document.getElementById('home');
-            
-            if (heroSection) {
-                window.scrollTo({
-                    top: heroSection.offsetTop,
-                    behavior: 'smooth'
-                });
-            }
-        });
+    if (!logoLink) return;
+    
+    logoLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        const heroSection = document.getElementById('home');
+        
+        if (heroSection) {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    });
+}
+
+// Handle responsive adjustments
+function initResponsiveChecks() {
+    // Check if it's a touch device and disable custom cursor
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.body.classList.add('touch-device');
     }
+    
+    // Handle modal scrolling on mobile
+    const modals = document.querySelectorAll('.portfolio-modal');
+    modals.forEach(modal => {
+        if (!modal) return;
+        
+        modal.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
+    });
+    
+    // Resize event handlers
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            // Reset mobile menu when resized to desktop
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            if (hamburger && hamburger.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.classList.remove('no-scroll');
+            }
+        }
+    });
 } 
