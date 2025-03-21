@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScrolling();
     initLogoScrollToHero();
     initResponsiveChecks();
+    initServicesAnimations();
 });
 
 // Preloader
@@ -569,4 +570,49 @@ function initResponsiveChecks() {
             }
         }
     });
+}
+
+// Services Animations
+function initServicesAnimations() {
+    const serviceItems = document.querySelectorAll('.service-item');
+    
+    if (serviceItems.length === 0) return;
+    
+    // Add class to prevent animations from firing immediately
+    document.body.classList.add('animation-ready');
+    
+    const startAnimations = (entries, observer) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add a delay based on the item's index
+                setTimeout(() => {
+                    entry.target.classList.add('service-item-visible');
+                }, index * 150); // 150ms delay between each item's animation
+                observer.unobserve(entry.target);
+            }
+        });
+    };
+    
+    // Use Intersection Observer API if supported
+    if ('IntersectionObserver' in window) {
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver(startAnimations, options);
+        
+        // Add a small delay before observation to ensure layout is stable
+        setTimeout(() => {
+            serviceItems.forEach(item => {
+                observer.observe(item);
+            });
+        }, 100);
+    } else {
+        // Fallback for browsers that don't support Intersection Observer
+        serviceItems.forEach(item => {
+            item.classList.add('service-item-visible');
+        });
+    }
 } 
