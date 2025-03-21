@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initTestimonialSlider();
     initClientSlider();
     initCounters();
+    initSmoothScrolling();
+    initLogoScrollToHero();
 });
 
 // Preloader
@@ -332,4 +334,23 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             });
         }
     });
-}); 
+});
+
+// Initialize smooth scrolling for logo click to hero section
+function initLogoScrollToHero() {
+    const logoLink = document.querySelector('.logo a');
+    
+    if (logoLink) {
+        logoLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const heroSection = document.getElementById('home');
+            
+            if (heroSection) {
+                window.scrollTo({
+                    top: heroSection.offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    }
+} 
